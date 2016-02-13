@@ -6,18 +6,29 @@ from rest_framework.response import Response
 
 from django.http import Http404
 from rest_framework.views import APIView
+from rest_framework import mixins
+from rest_framework import generics
 
 from snippets.models import Snippet
 from snippets.serializers import SnippetSerializer
 
 # Create your views here.
 
+#region generic CBV
+
+class SnippetList(generics.ListCreateAPIView):
+    queryset = Snippet.objects.all()
+    serializer_class = SnippetSerializer
+
+class SnippetDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Snippet.objects.all()
+    serializer_class = SnippetSerializer
+
+#endregion
+
 #region CBV Mixins
 
-from rest_framework import mixins
-from rest_framework import generics
-
-class SnippetList(mixins.ListModelMixin,
+class SnippetListMixins(mixins.ListModelMixin,
                   mixins.CreateModelMixin,
                   generics.GenericAPIView):
 
@@ -30,7 +41,7 @@ class SnippetList(mixins.ListModelMixin,
     def set(self, request, *args, **kwargs):
         return self.create(request, *args, **kwargs)
 
-class SnippetDetail(mixins.RetrieveModelMixin,
+class SnippetDetailMixins(mixins.RetrieveModelMixin,
                     mixins.UpdateModelMixin,
                     mixins.DestroyModelMixin,
                     generics.GenericAPIView):
