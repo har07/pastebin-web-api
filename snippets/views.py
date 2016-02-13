@@ -9,7 +9,7 @@ from snippets.serializers import SnippetSerializer
 # Create your views here.
 
 @api_view(['GET','POST'])
-def snippet_list(request):
+def snippet_list(request, format=None):
     """
     List all snippets
     :param request: Request Context
@@ -30,7 +30,7 @@ def snippet_list(request):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['GET', 'PUT', 'DELETE'])
-def snippet_detail(request, pk):
+def snippet_detail(request, pk, format=None):
     """
     Retrieve, update or delete a snippet instance.
     :param request: Request Context
@@ -57,4 +57,3 @@ def snippet_detail(request, pk):
     elif request.method == 'DELETE':
         snippet.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
-    
