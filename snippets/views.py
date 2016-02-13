@@ -12,7 +12,47 @@ from snippets.serializers import SnippetSerializer
 
 # Create your views here.
 
-class SnippetList(APIView):
+#region CBV Mixins
+
+from rest_framework import mixins
+from rest_framework import generics
+
+class SnippetList(mixins.ListModelMixin,
+                  mixins.CreateModelMixin,
+                  generics.GenericAPIView):
+
+    queryset = Snippet.objects.all()
+    serializer_class = SnippetSerializer
+
+    def get(self, request, *args, **kwargs):
+        return self.list(request, *args, **kwargs)
+
+    def set(self, request, *args, **kwargs):
+        return self.create(request, *args, **kwargs)
+
+class SnippetDetail(mixins.RetrieveModelMixin,
+                    mixins.UpdateModelMixin,
+                    mixins.DestroyModelMixin,
+                    generics.GenericAPIView):
+
+    queryset = Snippet.objects.all()
+    serializer_class = SnippetSerializer
+
+    def get(self, request, *args, **kwargs):
+        return self.retrieve(request, *args, **kwargs)
+
+    def put(self, request, *args, **kwargs):
+        return self.update(request, *args, **kwargs)
+
+    def delete(self, request, *args, **kwargs):
+        return self.destroy(request, *args, **kwargs)
+
+
+#endregion
+
+#region Basic Class Based Views
+
+class SnippetListBasic(APIView):
     """
     List all snippets, or create a new snippet.
     """
@@ -29,8 +69,7 @@ class SnippetList(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
-class SnippetDetail(APIView):
+class SnippetDetailBasic(APIView):
     """
     Retrieve, update or delete a snippet instance.
     """
@@ -59,6 +98,7 @@ class SnippetDetail(APIView):
         snippet.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+#endregion
 
 @api_view(['GET','POST'])
 def snippet_list(request, format=None):
